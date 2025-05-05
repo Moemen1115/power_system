@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>اختبار البصمجة</title>
+    <title>اختبار الباورسيستم</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <style>
         body {
@@ -656,95 +656,102 @@
         ];
 
 
-        let currentQuestionIndex = 0;
-        let score = 0;
-
-        function showQuestion(index) {
-            const quizContainer = document.getElementById("quiz-container");
-            quizContainer.innerHTML = `
-                  <div class="question-container l active">
-                  <h6 style="text-align:right">رقم السؤال ${index + 1} من ${questions.length}</h6>
-                  <h5 style="color: blue;    font-weight: 600;  direction: ltr;">${questions[index].question}</h5>
-                  <div id="options-container" style="color:black" class="d-flex flex-wrap"></div>
-                  </div>
-              `;
-
-
-            const optionsContainer = document.getElementById("options-container");
-            questions[index].options.forEach((option, i) => {
-                optionsContainer.innerHTML += `
-                  <h6 class="option-box" onclick="checkAnswer(${i})">${option}</h6> `;
-            });
+        function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+    }
 
-        function checkAnswer(selectedIndex) {
-            const answer = questions[currentQuestionIndex].answer;
+    let currentQuestionIndex = 0;
+    let score = 0;
 
-            questions[currentQuestionIndex].selectedIndex = selectedIndex;
+    function showQuestion(index) {
+        const quizContainer = document.getElementById("quiz-container");
+        quizContainer.innerHTML = `
+            <div class="question-container l active">
+            <h6 style="text-align:right">رقم السؤال ${index + 1} من ${questions.length}</h6>
+            <h5 style="color: blue; font-weight: 600; direction: ltr;">${questions[index].question}</h5>
+            <div id="options-container" style="color:black" class="d-flex flex-wrap"></div>
+            </div>
+        `;
 
-            if (selectedIndex === answer) {
-                score++;
-                document
-                    .querySelectorAll(".option-box")
-                [answer].classList.add("correct");
-                document.getElementById("correct-sound").play();
-            } else {
-                document
-                    .querySelectorAll(".option-box")
-                [selectedIndex].classList.add("incorrect");
-                document
-                    .querySelectorAll(".option-box")
-                [answer].classList.add("correct");
-                document.getElementById("incorrect-sound").play();
-            }
-
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < questions.length) {
-                    showQuestion(currentQuestionIndex);
-                    updateProgressBar();
-                } else {
-                    showScore();
-                    showSolutions();
-                }
-            }, 1000);
-        }
-
-        function showScore() {
-            const quizContainer = document.getElementById("quiz-container");
-            const scoreContainer = document.getElementById("score-container");
-            quizContainer.innerHTML = "";
-            scoreContainer.innerHTML = `<h3>Your result ${score} from ${questions.length}</h3>`;
-        }
-
-        function showSolutions() {
-            const quizContainer = document.getElementById("quiz-container");
-            const solutionsContainer = document.createElement("div");
-            solutionsContainer.classList.add("question-solution-container");
-            quizContainer.appendChild(solutionsContainer);
-
-            questions.forEach((question, index) => {
-                const solutionDiv = document.createElement("div");
-                solutionDiv.innerHTML = `
-                  <h6 style="color: red">${index + 1}. ${question.question}</h6>
-                  ${question.selectedIndex !== undefined ? `<p><strong>Your Choice:</strong> ${question.options[question.selectedIndex]}</p>` : ''}
-                  <p><strong>Correct Answer:</strong> ${question.options[question.answer]}</p>
-                  `;
-                solutionsContainer.appendChild(solutionDiv);
-            });
-        }
-
-        function updateProgressBar() {
-            const progressBar = document.getElementById("progress-bar");
-            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-            progressBar.style.width = `${progress}%`;
-            progressBar.setAttribute("aria-valuenow", progress);
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            showQuestion(currentQuestionIndex);
-            updateProgressBar();
+        const optionsContainer = document.getElementById("options-container");
+        questions[index].options.forEach((option, i) => {
+            optionsContainer.innerHTML += `
+                <h6 class="option-box" onclick="checkAnswer(${i})">${option}</h6> `;
         });
+    }
+
+    function checkAnswer(selectedIndex) {
+        const answer = questions[currentQuestionIndex].answer;
+
+        questions[currentQuestionIndex].selectedIndex = selectedIndex;
+
+        if (selectedIndex === answer) {
+            score++;
+            document
+                .querySelectorAll(".option-box")
+            [answer].classList.add("correct");
+            document.getElementById("correct-sound").play();
+        } else {
+            document
+                .querySelectorAll(".option-box")
+            [selectedIndex].classList.add("incorrect");
+            document
+                .querySelectorAll(".option-box")
+            [answer].classList.add("correct");
+            document.getElementById("incorrect-sound").play();
+        }
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(currentQuestionIndex);
+                updateProgressBar();
+            } else {
+                showScore();
+                showSolutions();
+            }
+        }, 1000);
+    }
+
+    function showScore() {
+        const quizContainer = document.getElementById("quiz-container");
+        const scoreContainer = document.getElementById("score-container");
+        quizContainer.innerHTML = "";
+        scoreContainer.innerHTML = `<h3>Your result ${score} from ${questions.length}</h3>`;
+    }
+
+    function showSolutions() {
+        const quizContainer = document.getElementById("quiz-container");
+        const solutionsContainer = document.createElement("div");
+        solutionsContainer.classList.add("question-solution-container");
+        quizContainer.appendChild(solutionsContainer);
+
+        questions.forEach((question, index) => {
+            const solutionDiv = document.createElement("div");
+            solutionDiv.innerHTML = `
+                <h6 style="color: red">${index + 1}. ${question.question}</h6>
+                ${question.selectedIndex !== undefined ? `<p><strong>Your Choice:</strong> ${question.options[question.selectedIndex]}</p>` : ''}
+                <p><strong>Correct Answer:</strong> ${question.options[question.answer]}</p>
+                `;
+            solutionsContainer.appendChild(solutionDiv);
+        });
+    }
+
+    function updateProgressBar() {
+        const progressBar = document.getElementById("progress-bar");
+        const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute("aria-valuenow", progress);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        shuffle(questions); // Shuffle the questions array
+        showQuestion(currentQuestionIndex);
+        updateProgressBar();
+    });
     </script>
 </body>
 
